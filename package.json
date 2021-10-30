@@ -1,0 +1,14 @@
+{
+  "type": "commonjs",
+  "name": "mudae-sniper",
+  "version": "1.1.0",
+  "description": "A bot that snipes mudae kakera and characters",
+  "main": "index.js",
+  "repository": "https://github.com/Vordlex/mudae-sniper",
+  "author": "Yago Oliveira",
+  "license": "",
+  "dependencies": {
+    "discord.js": "slow/discord.js#master",
+    "discord.js-light": "slow/discord.js-light#master"
+  }
+}
