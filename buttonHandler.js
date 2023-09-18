@@ -16,10 +16,7 @@ const buttonHandler = async (
   application_id = "432610292342587392"
 ) => {
   try {
-    console.log(
-      `{"type":3,"guild_id":"${guild_id}","channel_id":"${guild_id}","message_flags":0,"message_id":"${message_id}","application_id":"${application_id}","session_id":"0c10c7f223747bc824f8242daa6e3e31","data":{"component_type":2,"custom_id":"${custom_id}"}}`
-    )
-    const res = await fetch("https://discord.com/api/v9/interactions", {
+    await fetch("https://discord.com/api/v9/interactions", {
       headers: {
         accept: "*/*",
         "accept-language": "pt-BR",
@@ -44,8 +41,6 @@ const buttonHandler = async (
       body: `{"type":3,"guild_id":"${guild_id}","channel_id":"${channel_id}","message_flags":0,"message_id":"${message_id}","application_id":"${application_id}","session_id":"0c10c7f223747bc824f8242daa6e3e31","data":{"component_type":2,"custom_id":"${custom_id}"}}`,
       method: "POST",
     })
-
-    // console.log(res)
   } catch (error) {
     console.log(error)
   }

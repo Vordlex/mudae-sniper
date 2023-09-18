@@ -30,13 +30,12 @@ const {
 
     client.on("messageCreate", async (msg) => {
       if (msg.author.id === "432610292342587392") {
-        const description = msg.embeds[0]?.description.split("**")
-
         if (msg.components.length === 0) return
 
-        const msgComponents = msg.components[0]
-
         if (ALLOWED_CHANNEL_ID.includes(msg.channel.id)) {
+          const msgComponents = msg.components[0]
+          const description = msg.embeds[0]?.description.split("**")
+
           // Kakera Reaction
           if (
             msg.embeds[0]?.color === "6753288" ||
@@ -46,7 +45,7 @@ const {
               msgComponents.components[0].emoji.name.includes("kakera") &&
               description[1] >= MIN_VALUE_KAKERA
             ) {
-              await buttonHandler(
+              return await buttonHandler(
                 TOKEN,
                 msg.guildId,
                 msg.channelId,
@@ -60,7 +59,7 @@ const {
 
           // Marry by Characters
           if (CHARACTERS.includes(msg.embeds[0]?.author?.name)) {
-            await buttonHandler(
+            return await buttonHandler(
               TOKEN,
               msg.guildId,
               msg.channelId,
@@ -71,7 +70,7 @@ const {
 
           // Marry by Value
           if (description[1] >= MIN_VALUE_CHARACTERS) {
-            await buttonHandler(
+            return await buttonHandler(
               TOKEN,
               msg.guildId,
               msg.channelId,
@@ -83,7 +82,7 @@ const {
           // Marry by Wish
           description.forEach(async (element) => {
             if (element?.includes("Desejado por") && MARRY_ALL_WISHED) {
-              await buttonHandler(
+              return await buttonHandler(
                 TOKEN,
                 msg.guildId,
                 msg.channelId,
