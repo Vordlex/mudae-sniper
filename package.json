@@ -6,9 +6,8 @@
   "main": "index.js",
   "repository": "https://github.com/Vordlex/mudae-sniper",
   "author": "Yago Oliveira",
-  "license": "",
+  "license": "MIT",
   "dependencies": {
-    "discord.js": "slow/discord.js#master",
-    "discord.js-light": "slow/discord.js-light#master"
+    "discord.js-selfbot-v13": "^2.14.11"
   }
 }

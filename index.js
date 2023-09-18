@@ -1,87 +1,122 @@
-const { Intents, Client } = require("discord.js-light")
+const { Intents, Client } = require("discord.js-selfbot-v13")
 const configParse = require("./configParse")
+const buttonHandler = require("./buttonHandler")
 
 const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES],
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.DIRECT_MESSAGES,
+  ],
+  checkUpdate: false,
 })
 
-const { ALLOWED_CHANNEL_ID, CHARACTERS, MIN_VALUE_CHARACTERS, MIN_VALUE_KAKERA, TOKEN, MARRY_ALL_WISHED } = configParse()
+const {
+  ALLOWED_CHANNEL_ID,
+  CHARACTERS,
+  MIN_VALUE_CHARACTERS,
+  MIN_VALUE_KAKERA,
+  TOKEN,
+  MARRY_ALL_WISHED,
+} = configParse()
 
 ;(async () => {
   try {
     await client.login(TOKEN)
 
-    client.on("message", async (msg) => {
-      if (msg?.author?.id === "432610292342587392") {
-        const description = msg?.embeds[0]?.description?.split("**")
+    client.on("ready", () => {
+      console.log("CLIENT CONNECTED")
+    })
 
-        if (ALLOWED_CHANNEL_ID.includes(msg?.channel?.id)) {
+    client.on("messageCreate", async (msg) => {
+      if (msg.author.id === "432610292342587392") {
+        const description = msg.embeds[0]?.description.split("**")
+
+        if (msg.components.length === 0) return
+
+        const msgComponents = msg.components[0]
+
+        if (ALLOWED_CHANNEL_ID.includes(msg.channel.id)) {
           // Kakera Reaction
-          if (msg?.embeds[0]?.color === "6753288" || msg?.embeds[0]?.footer?.text?.includes("Pertence")) {
-            await msg.awaitReactions(
-              async (msgReactions) => {
-                if (msgReactions._emoji.name.includes("kakera") && description[1] >= MIN_VALUE_KAKERA) {
-                  await msg.react(`${msgReactions._emoji.name}:${msgReactions._emoji.id}`).catch((error) => {
-                    console.log(error)
-                  })
-                }
-              },
-              { max: 1 }
-            )
+          if (
+            msg.embeds[0]?.color === "6753288" ||
+            msg.embeds[0]?.footer?.text?.includes("Pertence")
+          ) {
+            if (
+              msgComponents.components[0].emoji.name.includes("kakera") &&
+              description[1] >= MIN_VALUE_KAKERA
+            ) {
+              await buttonHandler(
+                TOKEN,
+                msg.guildId,
+                msg.channelId,
+                msg.id,
+                msgComponents.components[0].customId
+              )
+            }
+
             return null
           }
-          await msg.awaitReactions(
-            async (msgReactions) => {
-              // Marry by Characters
-              if (CHARACTERS.includes(msg?.embeds[0]?.author?.name)) {
-                await msg.react(`${msgReactions._emoji.name}:${msgReactions._emoji.id}`).catch((error) => {
-                  console.log(error)
-                })
-              }
 
-              // Marry by Value
-              if (description[1] >= MIN_VALUE_CHARACTERS) {
-                if (msgReactions._emoji.id) {
-                  await msg.react(`${msgReactions._emoji.name}:${msgReactions._emoji.id}`).catch((error) => {
-                    console.log(error)
-                  })
-                } else {
-                  await msg.react(`${msgReactions._emoji.name}`).catch((error) => {
-                    console.log(error)
-                  })
-                }
-              }
+          // Marry by Characters
+          if (CHARACTERS.includes(msg.embeds[0]?.author?.name)) {
+            await buttonHandler(
+              TOKEN,
+              msg.guildId,
+              msg.channelId,
+              msg.id,
+              msgComponents.components[0].customId
+            )
+          }
 
-              // Marry by Wish
-              description.forEach(async (element) => {
-                if (element?.includes("Desejado por") && MARRY_ALL_WISHED) {
-                  if (msgReactions._emoji.id) {
-                    await msg.react(`${msgReactions._emoji.name}:${msgReactions._emoji.id}`).catch((error) => {
-                      console.log(error)
-                    })
-                  } else {
-                    await msg.react(`${msgReactions._emoji.name}`).catch((error) => {
-                      console.log(error)
-                    })
-                  }
-                }
-              })
-            },
-            { max: 1 }
-          )
+          // Marry by Value
+          if (description[1] >= MIN_VALUE_CHARACTERS) {
+            await buttonHandler(
+              TOKEN,
+              msg.guildId,
+              msg.channelId,
+              msg.id,
+              msgComponents.components[0].customId
+            )
+          }
+
+          // Marry by Wish
+          description.forEach(async (element) => {
+            if (element?.includes("Desejado por") && MARRY_ALL_WISHED) {
+              await buttonHandler(
+                TOKEN,
+                msg.guildId,
+                msg.channelId,
+                msg.id,
+                msgComponents.components[0].customId
+              )
+            }
+          })
 
           // Marry even if there's no reaction
-          if (ALLOWED_CHANNEL_ID.includes(msg?.channel?.id)) {
+          if (ALLOWED_CHANNEL_ID.includes(msg.channel.id)) {
             if (description !== undefined) {
               // Marry by Value
               if (description[1] >= MIN_VALUE_CHARACTERS) {
-                return await msg?.react(`❤️`)
+                return await buttonHandler(
+                  TOKEN,
+                  msg.guildId,
+                  msg.channelId,
+                  msg.id,
+                  msgComponents.components[0].customId
+                )
               }
 
               // Marry by Wish
               description.forEach(async (element) => {
                 if (element?.includes("Desejado por") && MARRY_ALL_WISHED) {
-                  return await msg?.react(`❤️`)
+                  return await buttonHandler(
+                    TOKEN,
+                    msg.guildId,
+                    msg.channelId,
+                    msg.id,
+                    msgComponents.components[0].customId
+                  )
                 }
               })
             }
@@ -90,10 +125,13 @@ const { ALLOWED_CHANNEL_ID, CHARACTERS, MIN_VALUE_CHARACTERS, MIN_VALUE_KAKERA, 
       }
     })
   } catch (error) {
-    if (error.toString().includes("An invalid token was provided") || error.toString().includes("401: Unauthorized")) {
+    console.log(error)
+    if (
+      error.toString().includes("An invalid token was provided") ||
+      error.toString().includes("401: Unauthorized")
+    ) {
       console.log("Invalid Token on config.txt")
       process.exit(1)
     }
-    console.log(error)
   }
 })()
