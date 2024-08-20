@@ -12,5 +12,18 @@ Mudae-Sniper is a NodeJS bot that snipe all rolls and kakera on allowed servers.
 # Requirements
 + NodeJS 12+
 
+# How to Run
++ Install [NodeJS](https://nodejs.org/en/download/package-manager/current)
++ Clone this repo with `git clone https://github.com/Vordlex/mudae-sniper` or just download and extract it.
++ Go into repo folder and open a terminal and type this command to install dependencies
+```sh
+npm i
+```
++ To run the bot just configure `config.txt` and type this final command 
+```sh
+node index.js
+```
+
+
 # Disclaimer
 This is a simple bot and many features can be added (like autoroll), but as a precaution and to avoid banning servers and even discord itself I don't think this is a good idea. But feel free to fork the project to edit it as you wish. JUST BE CAREFUL AND DON'T PUSH A COMMIT WITH YOUR TOKEN, THIS WILL GIVE ACCESS TO YOUR ACCOUNT
